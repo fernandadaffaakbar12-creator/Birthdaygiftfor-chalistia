@@ -1,4 +1,4 @@
-﻿// ==========================================
+// ==========================================
 // 0. ANIMASI LOADING "I LOVE YOU" MEMBENTUK HATI
 // ==========================================
 (function () {
@@ -245,7 +245,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "1009";
+        const SECRET_PIN = "2704";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -521,13 +521,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 // C. JIKA YANG DIKLIK ADALAH POLAROID
                 else if (this.classList.contains('polaroid')) {
-                    modalImg.src = this.querySelector('img').src;
-                    modalImg.style.aspectRatio = "1 / 1";
+                    const imgEl = this.querySelector('img');
+                    if (imgEl) {
+                        modalImg.src = imgEl.src;
+                    }
+                    modalImg.style.aspectRatio = "3 / 4";
+                    modalImg.style.width = "auto";
+                    modalImg.style.height = "70vh";
+                    modalImg.style.maxWidth = "85vw";
+                    modalImg.style.maxHeight = "72vh";
+                    modalImg.style.objectFit = "cover";
+
+                    const customCaption = this.getAttribute('data-caption');
+                    const capElem = this.querySelector('.caption');
+                    const teksCaption = customCaption ? customCaption : (capElem ? capElem.innerText : '');
+                    if (modalCaption) modalCaption.innerText = teksCaption;
                 }
                 // D. JIKA YANG DIKLIK ADALAH GALERI CINTA
                 else {
                     modalImg.src = this.src;
                     modalImg.style.aspectRatio = "9 / 16";
+                    modalImg.style.width = "auto";
+                    modalImg.style.height = "75vh";
+                    modalImg.style.maxWidth = "85vw";
+                    modalImg.style.maxHeight = "75vh";
+                    modalImg.style.objectFit = "cover";
                 }
 
                 modal.classList.add('show-modal');
@@ -540,12 +558,15 @@ document.addEventListener("DOMContentLoaded", function () {
         el.setAttribute('data-teks', el.innerHTML);
         el.innerHTML = '';
     });
+
+    initVideoMemories();
 });
 
 // Fungsi Menutup Layar & Mematikan Lagu
 function tutupModal() {
     const modal = document.getElementById('image-modal');
     const modalIframe = document.getElementById('modal-iframe');
+    const modalImg = document.getElementById('modal-img');
 
     if (modal) {
         modal.classList.remove('show-modal');
@@ -553,7 +574,106 @@ function tutupModal() {
         if (modalIframe) {
             modalIframe.src = "";
         }
+        if (modalImg) {
+            modalImg.style.width = "";
+            modalImg.style.height = "";
+            modalImg.style.maxWidth = "";
+            modalImg.style.maxHeight = "";
+        }
     }
+}
+
+// ==========================================
+// 1.B PENGATURAN VIDEO CORE MEMORIES & KUNCIAN ORIENTASI
+// ==========================================
+function initVideoMemories() {
+    const videos = document.querySelectorAll('.memory-video');
+    const bgMusic = document.getElementById('bg-music');
+
+    videos.forEach(video => {
+        // Otomatis pause lagu latar saat video diputar
+        video.addEventListener('play', function () {
+            // Hentikan video lain jika sedang menyala
+            videos.forEach(otherVideo => {
+                if (otherVideo !== video && !otherVideo.paused) {
+                    otherVideo.pause();
+                }
+            });
+
+            // Pause bg-music
+            if (bgMusic && !bgMusic.paused) {
+                bgMusic.pause();
+                video.setAttribute('data-paused-bgmusic', 'true');
+            }
+        });
+
+        // Resume lagu latar saat video di-pause / selesai (jika tidak ada video lain menyala)
+        const resumeBgMusicIfDone = function () {
+            const anyPlaying = Array.from(videos).some(v => !v.paused);
+            if (!anyPlaying && video.getAttribute('data-paused-bgmusic') === 'true') {
+                video.removeAttribute('data-paused-bgmusic');
+                if (bgMusic && bgMusic.paused) {
+                    bgMusic.play().catch(() => {});
+                }
+            }
+        };
+
+        video.addEventListener('pause', resumeBgMusicIfDone);
+        video.addEventListener('ended', resumeBgMusicIfDone);
+    });
+
+    // Pengecekan orientasi layar
+    function checkOrientation() {
+        const isLandscape = window.matchMedia("(orientation: landscape)").matches || (window.innerWidth > window.innerHeight);
+        const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 900);
+
+        const overlays = document.querySelectorAll('.rotate-lock-overlay');
+        overlays.forEach(overlay => {
+            if (isMobile && !isLandscape) {
+                // Di HP mode vertikal: tampilkan overlay & pause video
+                overlay.style.display = 'flex';
+                videos.forEach(v => {
+                    if (!v.paused) v.pause();
+                });
+            } else {
+                // Di mode horizontal atau di desktop: sembunyikan overlay
+                overlay.style.display = 'none';
+            }
+        });
+    }
+
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', function () {
+        setTimeout(checkOrientation, 250);
+    });
+    checkOrientation();
+}
+
+// Handler tombol putar layar penuh (fullscreen)
+function handleRotateAndPlay(videoId) {
+    const video = document.getElementById('video-memories-' + videoId);
+    if (!video) return;
+
+    const overlay = document.getElementById('rotate-overlay-' + videoId);
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+
+    // Masuk fullscreen dan coba kunci orientasi horizontal
+    if (video.requestFullscreen) {
+        video.requestFullscreen().catch(() => {});
+    } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+        // Safari iOS
+        video.webkitEnterFullscreen();
+    }
+
+    if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+    }
+
+    video.play().catch(() => {});
 }
 
 // ==========================================
