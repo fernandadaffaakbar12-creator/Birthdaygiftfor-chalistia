@@ -588,38 +588,17 @@ function tutupModal() {
 // ==========================================
 function initVideoMemories() {
     const videos = document.querySelectorAll('.memory-video');
-    const bgMusic = document.getElementById('bg-music');
 
     videos.forEach(video => {
-        // Otomatis pause lagu latar saat video diputar
         video.addEventListener('play', function () {
-            // Hentikan video lain jika sedang menyala
+            // Hentikan video lain jika sedang menyala agar tidak bertumpuk
             videos.forEach(otherVideo => {
                 if (otherVideo !== video && !otherVideo.paused) {
                     otherVideo.pause();
                 }
             });
-
-            // Pause bg-music
-            if (bgMusic && !bgMusic.paused) {
-                bgMusic.pause();
-                video.setAttribute('data-paused-bgmusic', 'true');
-            }
+            // Lagu latar (bg-music) tetap terus berputar tanpa dijeda
         });
-
-        // Resume lagu latar saat video di-pause / selesai (jika tidak ada video lain menyala)
-        const resumeBgMusicIfDone = function () {
-            const anyPlaying = Array.from(videos).some(v => !v.paused);
-            if (!anyPlaying && video.getAttribute('data-paused-bgmusic') === 'true') {
-                video.removeAttribute('data-paused-bgmusic');
-                if (bgMusic && bgMusic.paused) {
-                    bgMusic.play().catch(() => {});
-                }
-            }
-        };
-
-        video.addEventListener('pause', resumeBgMusicIfDone);
-        video.addEventListener('ended', resumeBgMusicIfDone);
     });
 
     // Pengecekan orientasi layar
