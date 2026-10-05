@@ -610,10 +610,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         modalSpotifyIframe.src = currentSpotifySongs[0].url;
                     }
 
-                    // Set URL ke ke-3 iframe view langsung
+                    // Set URL dan Label ke ke-3 iframe view langsung
                     if (modalSpotifyAll1 && currentSpotifySongs[0]) modalSpotifyAll1.src = currentSpotifySongs[0].url;
                     if (modalSpotifyAll2 && currentSpotifySongs[1]) modalSpotifyAll2.src = currentSpotifySongs[1].url;
                     if (modalSpotifyAll3 && currentSpotifySongs[2]) modalSpotifyAll3.src = currentSpotifySongs[2].url;
+
+                    const songTag1 = document.getElementById('spotify-all-tag-1');
+                    const songTag2 = document.getElementById('spotify-all-tag-2');
+                    const songTag3 = document.getElementById('spotify-all-tag-3');
+                    if (songTag1 && currentSpotifySongs[0]) songTag1.textContent = `🎵 1. ${currentSpotifySongs[0].title}`;
+                    if (songTag2 && currentSpotifySongs[1]) songTag2.textContent = `🎵 2. ${currentSpotifySongs[1].title}`;
+                    if (songTag3 && currentSpotifySongs[2]) songTag3.textContent = `🎵 3. ${currentSpotifySongs[2].title}`;
 
                     if (modalCaption && currentSpotifySongs[0]) {
                         modalCaption.innerText = currentSpotifySongs[0].title;
@@ -759,24 +766,23 @@ function initVideoMemories() {
         });
     });
 
-    // Pengecekan orientasi layar
+    // Pengecekan orientasi layar khusus Video 1 (Landscape)
     function checkOrientation() {
         const isLandscape = window.matchMedia("(orientation: landscape)").matches || (window.innerWidth > window.innerHeight);
         const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 900);
 
-        const overlays = document.querySelectorAll('.rotate-lock-overlay');
-        overlays.forEach(overlay => {
+        const overlay1 = document.getElementById('rotate-overlay-1');
+        if (overlay1) {
             if (isMobile && !isLandscape) {
-                // Di HP mode vertikal: tampilkan overlay & pause video
-                overlay.style.display = 'flex';
-                videos.forEach(v => {
-                    if (!v.paused) v.pause();
-                });
+                // Di HP mode vertikal: tampilkan overlay di Video 1 jika belum di-dismiss
+                if (!overlay1.classList.contains('dismissed')) {
+                    overlay1.style.display = 'flex';
+                }
             } else {
                 // Di mode horizontal atau di desktop: sembunyikan overlay
-                overlay.style.display = 'none';
+                overlay1.style.display = 'none';
             }
-        });
+        }
     }
 
     window.addEventListener('resize', checkOrientation);
@@ -793,6 +799,7 @@ function handleRotateAndPlay(videoId) {
 
     const overlay = document.getElementById('rotate-overlay-' + videoId);
     if (overlay) {
+        overlay.classList.add('dismissed');
         overlay.style.display = 'none';
     }
 
@@ -811,6 +818,19 @@ function handleRotateAndPlay(videoId) {
     }
 
     video.play().catch(() => { });
+}
+
+// Handler tombol putar di tempat (inline) tanpa harus fullscreen/rotate
+function dismissRotateOverlay(videoId) {
+    const overlay = document.getElementById('rotate-overlay-' + videoId);
+    const video = document.getElementById('video-memories-' + videoId);
+    if (overlay) {
+        overlay.classList.add('dismissed');
+        overlay.style.display = 'none';
+    }
+    if (video) {
+        video.play().catch(() => { });
+    }
 }
 
 // ==========================================

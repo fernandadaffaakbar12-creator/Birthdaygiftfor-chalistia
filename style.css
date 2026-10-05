@@ -1449,6 +1449,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 22px;
     width: 100%;
+    align-items: start;
 }
 
 .video-card-item {
@@ -1471,14 +1472,52 @@ body {
     border-color: rgba(255, 105, 180, 0.6);
 }
 
+/* Card 1 Landscape (16:9) */
+.video-card-item.video-card-landscape {
+    grid-column: 1 / -1;
+    max-width: 640px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Cards 2-5 Vertical */
+.video-card-item.video-card-vertical {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
 .video-frame-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
     border-radius: 12px;
     overflow: hidden;
     background: #000;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Rasio aspek presisi menyesuaikan file video asli */
+.video-frame-container.aspect-landscape {
+    aspect-ratio: 16 / 9; /* Video 1: 832x464 */
+}
+
+.video-frame-container.aspect-video-2 {
+    aspect-ratio: 464 / 832; /* Video 2: 464x832 (~9:16) */
+}
+
+.video-frame-container.aspect-video-3 {
+    aspect-ratio: 576 / 864; /* Video 3: 576x864 (2:3) */
+}
+
+.video-frame-container.aspect-video-4 {
+    aspect-ratio: 576 / 864; /* Video 4: 576x864 (2:3) */
+}
+
+.video-frame-container.aspect-video-5 {
+    aspect-ratio: 464 / 832; /* Video 5: 464x832 (~9:16) */
 }
 
 .memory-video {
@@ -1487,6 +1526,7 @@ body {
     object-fit: cover;
     display: block;
     border-radius: 12px;
+    background: #000;
 }
 
 .video-card-caption {
@@ -1504,8 +1544,8 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* OVERLAY KUNCI MODE HORIZONTAL (LANDSCAPE) */
-.rotate-lock-overlay {
+/* OVERLAY KUNCI KHUSUS VIDEO 1 (LANDSCAPE) */
+.video-card-landscape .rotate-lock-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -1518,16 +1558,16 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 15px;
+    padding: 14px;
     box-sizing: border-box;
     text-align: center;
     z-index: 5;
     transition: opacity 0.3s ease;
 }
 
-/* Saat layar HP mode portrait (vertikal) */
+/* Saat layar HP mode portrait (vertikal) - hanya untuk Video 1 jika belum di-dismiss */
 @media (max-width: 768px) and (orientation: portrait) {
-    .rotate-lock-overlay {
+    .video-card-landscape .rotate-lock-overlay:not(.dismissed) {
         display: flex;
     }
 }
@@ -1570,7 +1610,16 @@ body {
     color: #ffb6c1;
     margin: 0 0 10px 0;
     line-height: 1.25;
-    max-width: 240px;
+    max-width: 250px;
+}
+
+.rotate-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
 }
 
 .btn-rotate-play {
@@ -1578,7 +1627,7 @@ body {
     color: #fff;
     border: none;
     border-radius: 20px;
-    padding: 6px 16px;
+    padding: 6px 15px;
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
@@ -1586,12 +1635,61 @@ body {
     transition: transform 0.2s, background 0.2s;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 
 .btn-rotate-play:hover {
     transform: scale(1.05);
     background: linear-gradient(135deg, #e0007b, #ff1493);
+}
+
+.btn-rotate-inline {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    border: 1px solid rgba(255, 105, 180, 0.5);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-rotate-inline:hover {
+    background: rgba(255, 105, 180, 0.35);
+    transform: scale(1.05);
+}
+
+/* Penyesuaian Tampilan Mobile agar Rapih */
+@media (max-width: 680px) {
+    .video-memories-wrapper {
+        margin-top: 35px;
+        padding: 0 8px;
+    }
+
+    .video-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        justify-items: center;
+    }
+
+    .video-card-item.video-card-landscape {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .video-card-item.video-card-vertical {
+        max-width: 290px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .video-tag {
+        font-size: 1.35rem;
+    }
 }
 
 /* =========================================
