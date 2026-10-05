@@ -900,18 +900,25 @@ body {
     text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.6);
 }
 
-/* Posisi 3 Kartu Planet (120 derajat) dengan jarak saling berdekatan proporsional */
+/* Posisi 5 Kartu Planet (72 derajat) dengan jarak saling proporsional (tidak terlalu jauh dan tidak terlalu dekat) */
 .item1 {
-    transform: rotateY(0deg) translateZ(160px);
+    transform: rotateY(0deg) translateZ(230px);
 }
 
 .item2 {
-    transform: rotateY(120deg) translateZ(160px);
+    transform: rotateY(72deg) translateZ(230px);
 }
 
-.item3,
+.item3 {
+    transform: rotateY(144deg) translateZ(230px);
+}
+
+.item4 {
+    transform: rotateY(216deg) translateZ(230px);
+}
+
 .item5 {
-    transform: rotateY(240deg) translateZ(160px);
+    transform: rotateY(288deg) translateZ(230px);
 }
 
 /* =========================================
@@ -1008,6 +1015,241 @@ body {
     opacity: 1;
 }
 
+/* Tombol Tutup Modal */
+.modal-close-btn {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 105, 180, 0.4);
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 105, 180, 0.3);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    z-index: 10005;
+}
+
+.modal-close-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: rgba(255, 105, 180, 0.35);
+    border-color: #ff69b4;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+}
+
+/* Container Spotify 3 Lagu */
+.modal-spotify-container {
+    width: 90vw;
+    max-width: 480px;
+    background: linear-gradient(145deg, rgba(28, 12, 38, 0.95), rgba(15, 8, 25, 0.98));
+    border: 1px solid rgba(255, 105, 180, 0.35);
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), 0 0 35px rgba(255, 105, 180, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-sizing: border-box;
+    z-index: 10001;
+}
+
+#image-modal.show-modal .modal-spotify-container {
+    transform: scale(1);
+}
+
+.spotify-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.spotify-badge {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ff85c0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(255, 105, 180, 0.5);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.spotify-view-toggle {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 105, 180, 0.25);
+    border-radius: 30px;
+    padding: 3px;
+    gap: 4px;
+}
+
+.spotify-view-toggle .view-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    font-family: inherit;
+}
+
+.spotify-view-toggle .view-btn.active {
+    background: linear-gradient(135deg, #ff69b4, #da70d6);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(255, 105, 180, 0.4);
+}
+
+/* Tabs lagu pilihan */
+.spotify-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.spotify-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 105, 180, 0.2);
+    border-radius: 12px;
+    color: #fce4ec;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s ease;
+}
+
+.spotify-tab-btn:hover {
+    background: rgba(255, 105, 180, 0.15);
+    border-color: rgba(255, 105, 180, 0.5);
+    transform: translateX(4px);
+}
+
+.spotify-tab-btn.active {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.3), rgba(218, 112, 214, 0.25));
+    border-color: #ff69b4;
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+    font-weight: 600;
+}
+
+.spotify-tab-btn .tab-num {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255, 105, 180, 0.25);
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #ff85c0;
+    flex-shrink: 0;
+}
+
+.spotify-tab-btn.active .tab-num {
+    background: #ff69b4;
+    color: #ffffff;
+}
+
+.spotify-tab-btn .tab-title {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.spotify-tab-btn .tab-icon {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.spotify-tab-btn.active .tab-icon {
+    opacity: 1;
+    animation: pulseIcon 1.5s infinite;
+}
+
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Single Spotify Player Iframe */
+#modal-spotify-iframe {
+    width: 100%;
+    height: 152px;
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* List view (Semua 3 Lagu) */
+.spotify-all-view {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.spotify-all-view::-webkit-scrollbar {
+    width: 6px;
+}
+.spotify-all-view::-webkit-scrollbar-thumb {
+    background: rgba(255, 105, 180, 0.4);
+    border-radius: 10px;
+}
+
+.spotify-embed-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.song-num-tag {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ff85c0;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.spotify-embed-item iframe {
+    width: 100%;
+    height: 152px;
+    border-radius: 12px;
+    border: none;
+}
+
 /* Penyesuaian mobile untuk karousel 3D sudah digabung ke media query utama di bawah */
 
 /* =========================================
@@ -1036,9 +1278,10 @@ body {
 ========================================= */
 .gallery-scroll {
     display: flex;
-    gap: 15px;
+    gap: 16px;
     overflow-x: hidden;
     padding: 20px 10px;
+    align-items: center;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     /* Firefox */
@@ -1110,15 +1353,28 @@ body {
 .scratch-card {
     position: relative;
     flex: 0 0 auto;
-    width: 220px;
-    aspect-ratio: 9 / 16;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 2px solid rgba(255, 105, 180, 0.4) !important;
-    box-shadow: 0 4px 10px rgba(255, 20, 147, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.25) !important;
     cursor: pointer;
     scroll-snap-align: center;
     animation: float-photo 4s ease-in-out infinite;
     overflow: hidden;
+    background: rgba(40, 15, 35, 0.7);
+}
+
+/* Foto 1-4: Aspek Rasio 3:2 (Landscape) */
+.scratch-card.aspect-3-2,
+.scratch-card:nth-child(-n+4) {
+    width: 360px;
+    aspect-ratio: 3 / 2;
+}
+
+/* Foto 5-6: Aspek Rasio 9:16 (Portrait) */
+.scratch-card.aspect-9-16,
+.scratch-card:nth-child(n+5) {
+    width: 190px;
+    aspect-ratio: 9 / 16;
 }
 
 .scratch-card:nth-child(even) {
@@ -1474,40 +1730,9 @@ body {
 /* =========================================
    DESAIN LAYAR FOTO MEMBESAR (LIGHTBOX)
 ========================================= */
+/* Layar modal lightbox membesar */
 #image-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(100, 80, 0, 0.5);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-
-#image-modal.show-modal {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-#modal-img {
-    max-width: 90vw;
-    max-height: 90vh;
-    border-radius: 15px;
-    box-shadow: 0 10px 50px rgba(255, 105, 180, 0.5);
-    transform: scale(0.7);
-    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-#image-modal.show-modal #modal-img {
-    transform: scale(1);
+    flex-direction: column;
 }
 
 /* =========================================
@@ -1657,18 +1882,65 @@ body {
         font-size: 0.95rem;
     }
 
-    /* Menyesuaikan jarak orbit 3 kartu di HP */
+    /* Menyesuaikan jarak orbit 5 kartu di HP (tidak terlalu jauh dan tidak terlalu dekat) */
     .item1 {
-        transform: rotateY(0deg) translateZ(120px);
+        transform: rotateY(0deg) translateZ(175px);
     }
 
     .item2 {
-        transform: rotateY(120deg) translateZ(120px);
+        transform: rotateY(72deg) translateZ(175px);
     }
 
-    .item3,
+    .item3 {
+        transform: rotateY(144deg) translateZ(175px);
+    }
+
+    .item4 {
+        transform: rotateY(216deg) translateZ(175px);
+    }
+
     .item5 {
-        transform: rotateY(240deg) translateZ(120px);
+        transform: rotateY(288deg) translateZ(175px);
+    }
+
+    .modal-close-btn {
+        top: 15px;
+        right: 15px;
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+    }
+
+    .modal-spotify-container {
+        padding: 16px 14px;
+        max-width: 94vw;
+        border-radius: 18px;
+    }
+
+    .spotify-tab-btn {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+
+    /* Penyesuaian Mobile untuk Core Memories (Foto 1-4: 3:2, Foto 5-6: 9:16) */
+    .gallery-scroll {
+        gap: 12px;
+        padding: 15px 5px;
+        align-items: center;
+    }
+
+    .scratch-card.aspect-3-2,
+    .scratch-card:nth-child(-n+4) {
+        width: min(290px, 80vw);
+        aspect-ratio: 3 / 2;
+        border-radius: 10px;
+    }
+
+    .scratch-card.aspect-9-16,
+    .scratch-card:nth-child(n+5) {
+        width: min(165px, 46vw);
+        aspect-ratio: 9 / 16;
+        border-radius: 10px;
     }
 
     #main-content {

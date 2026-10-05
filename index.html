@@ -148,7 +148,7 @@
     <div id="pin-screen" style="display: flex;" class="active">
         <div class="pin-container glass-panel">
             <h2>Enter PIN</h2>
-            <p style="margin-bottom: 2px;">passwordnya tanggal + bulan jadian kita yaa.</p>
+            <p style="margin-bottom: 2px;">passwordnya tanggal lahir aku + tanggal lahir kamu yaa.</p>
             <p style="margin-top: 0; font-size: 0.5rem;"> (Awas aja kalau lupa!!)</p>
             <input type="password" id="pin-input" maxlength="4" placeholder="****" inputmode="numeric" pattern="[0-9]*">
         </div>
@@ -177,7 +177,7 @@
             <h1 class="aesthetic-font fade-in-text">Happy Birthday,<br>My Favorite Person</h1>
             <p class="aesthetic-font fade-in-text"
                 style="font-size: 1.3rem; color: #c71585; margin-top: 10px; margin-bottom: 10px; letter-spacing: 2px;">-
-                Salsabila Ramadhani -</p>
+                Septi Yanti Oktaviyanda -</p>
             <img src="img/foto-pacar.png" alt="Foto Pacar" class="birthday-photo fade-in-text">
             <p class="typing-text">Hari ini jadi salah satu hari yang spesial, karena di hari ini kamu lahir dan tumbuh
                 jadi seseorang yang luar biasa.</p>
@@ -219,14 +219,33 @@
                         <p class="planet-caption">Your favorite food</p>
                     </div>
 
-                    <div class="planet-card item2" data-caption="Frisenflag Strawberry">
+                    <div class="planet-card item2" data-caption="Matcha">
                         <img src="img/favorite-drink.jpg" alt="Drink">
                         <p class="planet-caption">Your favorite drink</p>
                     </div>
 
-                    <div class="planet-card item3" data-caption="Marestu Rafli Ramadhan">
+                    <div class="planet-card item3" data-caption="Zidan">
                         <img src="img/favorite-person.jpg" alt="Person">
                         <p class="planet-caption">Your favorite friend/person</p>
+                    </div>
+
+                    <div class="planet-card item4" data-type="spotify" data-caption="Cry - Cigarettes After Sex"
+                        data-embed="https://open.spotify.com/embed/track/7mDTvYD2ieE4Q28XFziMfJ?utm_source=generator&si=e6cc4d9d11424f91"
+                        data-embed-1="https://open.spotify.com/embed/track/7mDTvYD2ieE4Q28XFziMfJ?utm_source=generator&si=e6cc4d9d11424f91"
+                        data-caption-1="Cry - Cigarettes After Sex"
+                        data-embed-2="https://open.spotify.com/embed/track/6GGtHZgBycCgGBUhZo81xe?utm_source=generator&theme=0&si=8626d2ed590a44a5"
+                        data-caption-2="Say Yes To Heaven - Lana Del Rey"
+                        data-embed-3="https://open.spotify.com/embed/track/0HiNUFD2ovdPC2p5tbnzCG?utm_source=generator&si=fc6b13c56d05453b"
+                        data-caption-3="Kita - Sheila On 7">
+                        <img src="img/favorite-song.jpg" alt="Favorite Song">
+                        <p class="planet-caption">Your favorite song</p>
+                    </div>
+
+                    <div class="planet-card item5" data-type="youtube"
+                        data-embed="https://www.youtube.com/embed/Bnv-06GMN5I?si=NY_Pm-2Lf5K1p1WP"
+                        data-caption="Upin Ipin">
+                        <img src="img/favorite-yt.png" alt="YouTube">
+                        <p class="planet-caption">Your favorite yt</p>
                     </div>
 
                 </div>
@@ -243,20 +262,28 @@
                     Us</span>
             </h2>
             <div class="gallery-scroll">
-                <div class="scratch-card">
+                <div class="scratch-card aspect-3-2">
                     <img src="img/1.jpeg" alt="Kenangan 1">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
-                <div class="scratch-card">
+                <div class="scratch-card aspect-3-2">
                     <img src="img/2.jpeg" alt="Kenangan 2">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
-                <div class="scratch-card">
+                <div class="scratch-card aspect-3-2">
                     <img src="img/3.jpeg" alt="Kenangan 3">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
-                <div class="scratch-card">
+                <div class="scratch-card aspect-3-2">
                     <img src="img/4.jpeg" alt="Kenangan 4">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card aspect-9-16">
+                    <img src="img/5.jpeg" alt="Kenangan 5">
+                    <canvas class="scratch-canvas"></canvas>
+                </div>
+                <div class="scratch-card aspect-9-16">
+                    <img src="img/6.jpeg" alt="Kenangan 6">
                     <canvas class="scratch-canvas"></canvas>
                 </div>
             </div>
@@ -447,7 +474,7 @@
                                 <div class="flame-inner"></div>
                             </div>
                             <div class="candle-number-body">
-                                <span class="candle-digit">0</span>
+                                <span class="candle-digit">1</span>
                             </div>
                         </div>
                     </div>
@@ -477,10 +504,57 @@
             </div>
         </div>
 
-        <div id="image-modal" onclick="tutupModal()">
+        <div id="image-modal" onclick="handleModalBackdropClick(event)">
+            <button class="modal-close-btn" onclick="tutupModal()" aria-label="Tutup" title="Tutup">✕</button>
             <img id="modal-img" src="" alt="Foto Diperbesar">
 
-            <!-- [BARU] Tempat untuk memunculkan pemutar musik Spotify/YouTube -->
+            <!-- Pemutar Spotify Khusus (3 Lagu Favorit) -->
+            <div id="modal-spotify-container" class="modal-spotify-container" style="display: none;"
+                onclick="event.stopPropagation()">
+                <div class="spotify-header">
+                    <span class="spotify-badge">🎧 3 Favorite Songs</span>
+                    <div class="spotify-view-toggle">
+                        <button type="button" class="view-btn active" id="btn-view-tabs"
+                            onclick="switchSpotifyView('tabs', event)">Pilih Lagu</button>
+                        <button type="button" class="view-btn" id="btn-view-all"
+                            onclick="switchSpotifyView('all', event)">Semua (3 Lagu)</button>
+                    </div>
+                </div>
+
+                <!-- View Mode 1: Tab switcher + player utama -->
+                <div id="spotify-tabs-view" class="spotify-tabs-view">
+                    <div class="spotify-tabs" id="spotify-tabs">
+                        <!-- Diisi via JavaScript -->
+                    </div>
+                    <iframe id="modal-spotify-iframe" class="iframe-spotify" src="" frameborder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"></iframe>
+                </div>
+
+                <!-- View Mode 2: Tampilkan 3 embed lagu sekaligus -->
+                <div id="spotify-all-view" class="spotify-all-view" style="display: none;">
+                    <div class="spotify-embed-item">
+                        <span class="song-num-tag">🎵 1. Cry - Cigarettes After Sex</span>
+                        <iframe id="modal-spotify-all-1" class="iframe-spotify" src="" frameborder="0"
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"></iframe>
+                    </div>
+                    <div class="spotify-embed-item">
+                        <span class="song-num-tag">🎵 2. Say Yes To Heaven - Lana Del Rey</span>
+                        <iframe id="modal-spotify-all-2" class="iframe-spotify" src="" frameborder="0"
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"></iframe>
+                    </div>
+                    <div class="spotify-embed-item">
+                        <span class="song-num-tag">🎵 3. Kita - Sheila On 7</span>
+                        <iframe id="modal-spotify-all-3" class="iframe-spotify" src="" frameborder="0"
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pemutar YouTube -->
             <iframe id="modal-iframe" src="" frameborder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"></iframe>

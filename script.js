@@ -245,7 +245,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "2704";
+        const SECRET_PIN = "2306";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -256,7 +256,7 @@
                 // Percobaan pertama: tampilkan foto kucing
                 showCat: true,
                 emoji: '',
-                message: 'Masa tanggal spesial kita lupa?',
+                message: 'Masa tanggal lahir aku lupa?',
                 buttonText: 'Iya iya maaf 😭'
             },
             {
@@ -469,12 +469,73 @@
 // ==========================================
 // 1. FUNGSI FOTO MEMBESAR (LIGHTBOX) & PEMUTAR MUSIK
 // ==========================================
+let currentSpotifySongs = [];
+let activeSpotifyIndex = 0;
+
+function switchSpotifyView(view, e) {
+    if (e) e.stopPropagation();
+    const tabsView = document.getElementById('spotify-tabs-view');
+    const allView = document.getElementById('spotify-all-view');
+    const btnTabs = document.getElementById('btn-view-tabs');
+    const btnAll = document.getElementById('btn-view-all');
+
+    if (view === 'all') {
+        if (tabsView) tabsView.style.display = 'none';
+        if (allView) allView.style.display = 'flex';
+        if (btnTabs) btnTabs.classList.remove('active');
+        if (btnAll) btnAll.classList.add('active');
+    } else {
+        if (tabsView) tabsView.style.display = 'block';
+        if (allView) allView.style.display = 'none';
+        if (btnTabs) btnTabs.classList.add('active');
+        if (btnAll) btnAll.classList.remove('active');
+    }
+}
+
+function selectSpotifyTrack(index, e) {
+    if (e) e.stopPropagation();
+    if (!currentSpotifySongs || currentSpotifySongs.length <= index) return;
+    activeSpotifyIndex = index;
+
+    const modalSpotifyIframe = document.getElementById('modal-spotify-iframe');
+    const modalCaption = document.getElementById('modal-caption');
+    const tabButtons = document.querySelectorAll('.spotify-tab-btn');
+
+    tabButtons.forEach((btn, idx) => {
+        if (idx === index) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    const selectedSong = currentSpotifySongs[index];
+    if (modalSpotifyIframe) {
+        modalSpotifyIframe.src = selectedSong.url;
+    }
+    if (modalCaption) {
+        modalCaption.innerText = selectedSong.title;
+    }
+}
+
+function handleModalBackdropClick(e) {
+    if (e.target.id === 'image-modal') {
+        tutupModal();
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const daftarFoto = document.querySelectorAll('.gallery-scroll img, .polaroid, .planet-card');
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-img');
     const modalIframe = document.getElementById('modal-iframe'); // Panggil elemen iframe
     const modalCaption = document.getElementById('modal-caption');
+    const modalSpotifyContainer = document.getElementById('modal-spotify-container');
+    const modalSpotifyIframe = document.getElementById('modal-spotify-iframe');
+    const modalSpotifyAll1 = document.getElementById('modal-spotify-all-1');
+    const modalSpotifyAll2 = document.getElementById('modal-spotify-all-2');
+    const modalSpotifyAll3 = document.getElementById('modal-spotify-all-3');
+    const spotifyTabs = document.getElementById('spotify-tabs');
 
     if (daftarFoto.length > 0 && modal && modalImg) {
         daftarFoto.forEach(foto => {
@@ -485,9 +546,81 @@ document.addEventListener("DOMContentLoaded", function () {
                 modalImg.style.display = 'block'; // Tampilkan foto sebagai default
                 modalIframe.style.display = 'none'; // Sembunyikan musik sebagai default
                 modalIframe.src = ""; // Kosongkan lagu sebelumnya
+                if (modalSpotifyContainer) modalSpotifyContainer.style.display = 'none';
+                if (modalSpotifyIframe) modalSpotifyIframe.src = "";
+                if (modalSpotifyAll1) modalSpotifyAll1.src = "";
+                if (modalSpotifyAll2) modalSpotifyAll2.src = "";
+                if (modalSpotifyAll3) modalSpotifyAll3.src = "";
 
-                // A. JIKA YANG DIKLIK ADALAH KARTU LAGU/VIDEO (Punya data-embed)
-                if (this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
+                // A. JIKA YANG DIKLIK ADALAH KARTU SPOTIFY DENGAN 3 LAGU
+                const dataType = this.getAttribute('data-type');
+                const isSpotifyCard = dataType === 'spotify' ||
+                    this.hasAttribute('data-embed-1') ||
+                    (this.getAttribute('data-embed') && this.getAttribute('data-embed').includes('spotify.com'));
+
+                if (this.classList.contains('planet-card') && isSpotifyCard) {
+                    modalImg.style.display = 'none';
+                    modalIframe.style.display = 'none';
+                    if (modalSpotifyContainer) modalSpotifyContainer.style.display = 'flex';
+
+                    // Kumpulkan 3 lagu embed
+                    currentSpotifySongs = [];
+                    for (let i = 1; i <= 3; i++) {
+                        const embedUrl = this.getAttribute(`data-embed-${i}`) || (i === 1 ? this.getAttribute('data-embed') : null);
+                        const caption = this.getAttribute(`data-caption-${i}`) || (i === 1 ? this.getAttribute('data-caption') : `Lagu ${i}`);
+                        if (embedUrl) {
+                            currentSpotifySongs.push({
+                                url: embedUrl,
+                                title: caption
+                            });
+                        }
+                    }
+
+                    // Fallback jika tidak ada data-embed-1..3
+                    if (currentSpotifySongs.length === 0 && this.hasAttribute('data-embed')) {
+                        currentSpotifySongs.push({
+                            url: this.getAttribute('data-embed'),
+                            title: this.getAttribute('data-caption') || 'Favorite Song'
+                        });
+                    }
+
+                    // Render Tabs
+                    if (spotifyTabs) {
+                        spotifyTabs.innerHTML = '';
+                        currentSpotifySongs.forEach((song, idx) => {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = `spotify-tab-btn ${idx === 0 ? 'active' : ''}`;
+                            btn.innerHTML = `
+                                <span class="tab-num">${idx + 1}</span>
+                                <span class="tab-title">${song.title}</span>
+                                <span class="tab-icon">▶</span>
+                            `;
+                            btn.addEventListener('click', (e) => selectSpotifyTrack(idx, e));
+                            spotifyTabs.appendChild(btn);
+                        });
+                    }
+
+                    // Set default view ke tabs
+                    switchSpotifyView('tabs');
+
+                    // Set URL Lagu 1 ke player utama
+                    activeSpotifyIndex = 0;
+                    if (modalSpotifyIframe && currentSpotifySongs[0]) {
+                        modalSpotifyIframe.src = currentSpotifySongs[0].url;
+                    }
+
+                    // Set URL ke ke-3 iframe view langsung
+                    if (modalSpotifyAll1 && currentSpotifySongs[0]) modalSpotifyAll1.src = currentSpotifySongs[0].url;
+                    if (modalSpotifyAll2 && currentSpotifySongs[1]) modalSpotifyAll2.src = currentSpotifySongs[1].url;
+                    if (modalSpotifyAll3 && currentSpotifySongs[2]) modalSpotifyAll3.src = currentSpotifySongs[2].url;
+
+                    if (modalCaption && currentSpotifySongs[0]) {
+                        modalCaption.innerText = currentSpotifySongs[0].title;
+                    }
+                }
+                // B. JIKA YANG DIKLIK ADALAH KARTU LAGU/VIDEO LAINNYA (Misal YouTube)
+                else if (this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
                     modalImg.style.display = 'none'; // Sembunyikan foto
                     modalIframe.style.display = 'block'; // Tampilkan alat musik/video
 
@@ -507,19 +640,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     const customCaption = this.getAttribute('data-caption');
-                    const teksCaption = customCaption ? customCaption : this.querySelector('.planet-caption').innerText;
+                    const capEl = this.querySelector('.planet-caption');
+                    const teksCaption = customCaption ? customCaption : (capEl ? capEl.innerText : '');
                     if (modalCaption) modalCaption.innerText = teksCaption;
                 }
-                // B. JIKA YANG DIKLIK ADALAH KARTU 3D BIASA (Bukan Lagu)
+                // C. JIKA YANG DIKLIK ADALAH KARTU 3D BIASA (Bukan Lagu)
                 else if (this.classList.contains('planet-card')) {
-                    modalImg.src = this.querySelector('img').src;
+                    const imgEl = this.querySelector('img');
+                    if (imgEl) modalImg.src = imgEl.src;
                     modalImg.style.aspectRatio = "3 / 4";
 
                     const customCaption = this.getAttribute('data-caption');
-                    const teksCaption = customCaption ? customCaption : this.querySelector('.planet-caption').innerText;
+                    const capEl = this.querySelector('.planet-caption');
+                    const teksCaption = customCaption ? customCaption : (capEl ? capEl.innerText : '');
                     if (modalCaption) modalCaption.innerText = teksCaption;
                 }
-                // C. JIKA YANG DIKLIK ADALAH POLAROID
+                // D. JIKA YANG DIKLIK ADALAH POLAROID
                 else if (this.classList.contains('polaroid')) {
                     const imgEl = this.querySelector('img');
                     if (imgEl) {
@@ -537,15 +673,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     const teksCaption = customCaption ? customCaption : (capElem ? capElem.innerText : '');
                     if (modalCaption) modalCaption.innerText = teksCaption;
                 }
-                // D. JIKA YANG DIKLIK ADALAH GALERI CINTA
+                // E. JIKA YANG DIKLIK ADALAH GALERI CINTA (Core Memories)
                 else {
                     modalImg.src = this.src;
-                    modalImg.style.aspectRatio = "9 / 16";
-                    modalImg.style.width = "auto";
-                    modalImg.style.height = "75vh";
-                    modalImg.style.maxWidth = "85vw";
-                    modalImg.style.maxHeight = "75vh";
-                    modalImg.style.objectFit = "cover";
+                    const cardParent = this.closest('.scratch-card');
+                    const is32 = (cardParent && cardParent.classList.contains('aspect-3-2')) || 
+                                 (this.naturalWidth && this.naturalHeight && (this.naturalWidth / this.naturalHeight > 1.2));
+
+                    if (is32) {
+                        modalImg.style.aspectRatio = "3 / 2";
+                        modalImg.style.width = "auto";
+                        modalImg.style.height = "auto";
+                        modalImg.style.maxWidth = "90vw";
+                        modalImg.style.maxHeight = "75vh";
+                        modalImg.style.objectFit = "contain";
+                    } else {
+                        modalImg.style.aspectRatio = "9 / 16";
+                        modalImg.style.width = "auto";
+                        modalImg.style.height = "75vh";
+                        modalImg.style.maxWidth = "85vw";
+                        modalImg.style.maxHeight = "75vh";
+                        modalImg.style.objectFit = "cover";
+                    }
                 }
 
                 modal.classList.add('show-modal');
@@ -566,14 +715,23 @@ document.addEventListener("DOMContentLoaded", function () {
 function tutupModal() {
     const modal = document.getElementById('image-modal');
     const modalIframe = document.getElementById('modal-iframe');
+    const modalSpotifyIframe = document.getElementById('modal-spotify-iframe');
+    const modalSpotifyAll1 = document.getElementById('modal-spotify-all-1');
+    const modalSpotifyAll2 = document.getElementById('modal-spotify-all-2');
+    const modalSpotifyAll3 = document.getElementById('modal-spotify-all-3');
+    const modalSpotifyContainer = document.getElementById('modal-spotify-container');
     const modalImg = document.getElementById('modal-img');
 
     if (modal) {
         modal.classList.remove('show-modal');
-        // KUNCI PENTING: Mengosongkan src agar lagu berhenti berputar saat ditutup
-        if (modalIframe) {
-            modalIframe.src = "";
-        }
+        // KUNCI PENTING: Mengosongkan src agar lagu/video berhenti berputar saat ditutup
+        if (modalIframe) modalIframe.src = "";
+        if (modalSpotifyIframe) modalSpotifyIframe.src = "";
+        if (modalSpotifyAll1) modalSpotifyAll1.src = "";
+        if (modalSpotifyAll2) modalSpotifyAll2.src = "";
+        if (modalSpotifyAll3) modalSpotifyAll3.src = "";
+        if (modalSpotifyContainer) modalSpotifyContainer.style.display = 'none';
+
         if (modalImg) {
             modalImg.style.width = "";
             modalImg.style.height = "";
@@ -640,7 +798,7 @@ function handleRotateAndPlay(videoId) {
 
     // Masuk fullscreen dan coba kunci orientasi horizontal
     if (video.requestFullscreen) {
-        video.requestFullscreen().catch(() => {});
+        video.requestFullscreen().catch(() => { });
     } else if (video.webkitRequestFullscreen) {
         video.webkitRequestFullscreen();
     } else if (video.webkitEnterFullscreen) {
@@ -649,10 +807,10 @@ function handleRotateAndPlay(videoId) {
     }
 
     if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('landscape').catch(() => {});
+        screen.orientation.lock('landscape').catch(() => { });
     }
 
-    video.play().catch(() => {});
+    video.play().catch(() => { });
 }
 
 // ==========================================
@@ -965,14 +1123,20 @@ document.addEventListener('DOMContentLoaded', () => {
         let drawMoveCount = 0;
 
         setTimeout(() => {
-            canvas.width = 220;
-            canvas.height = Math.round(220 * 16 / 9);
+            const card = canvas.closest('.scratch-card');
+            const cardRect = card ? card.getBoundingClientRect() : canvas.getBoundingClientRect();
+            const w = Math.round(cardRect.width || card?.offsetWidth || 220);
+            const isCard32 = card && card.classList.contains('aspect-3-2');
+            const h = Math.round(cardRect.height || card?.offsetHeight || (isCard32 ? Math.round(w * 2 / 3) : Math.round(w * 16 / 9)));
+            canvas.width = w;
+            canvas.height = h;
 
             ctx.fillStyle = '#FFF0F5';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Glitter emas kecil-kecil
-            for (let i = 0; i < 300; i++) {
+            const particleCount = Math.round((canvas.width * canvas.height) / 180);
+            for (let i = 0; i < particleCount; i++) {
                 ctx.beginPath();
                 ctx.arc(
                     Math.random() * canvas.width,
@@ -1020,8 +1184,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const canvasRect = canvas.getBoundingClientRect();
-                const x = clientX - canvasRect.left;
-                const y = clientY - canvasRect.top;
+                const scaleX = canvasRect.width ? (canvas.width / canvasRect.width) : 1;
+                const scaleY = canvasRect.height ? (canvas.height / canvasRect.height) : 1;
+                const x = (clientX - canvasRect.left) * scaleX;
+                const y = (clientY - canvasRect.top) * scaleY;
 
                 ctx.lineWidth = brushRadius * 2;
                 ctx.lineCap = 'round';
