@@ -245,7 +245,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "2306";
+        const SECRET_PIN = "080126";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -351,7 +351,7 @@
 
         if (pinInput) {
             pinInput.addEventListener('input', function () {
-                if (pinInput.value.length === 4) {
+                if (pinInput.value.length === 6) {
                     // Delay sedikit agar digit terakhir terasa diketik
                     setTimeout(() => {
                         if (pinInput.value === SECRET_PIN) {
@@ -469,54 +469,7 @@
 // ==========================================
 // 1. FUNGSI FOTO MEMBESAR (LIGHTBOX) & PEMUTAR MUSIK
 // ==========================================
-let currentSpotifySongs = [];
-let activeSpotifyIndex = 0;
-
-function switchSpotifyView(view, e) {
-    if (e) e.stopPropagation();
-    const tabsView = document.getElementById('spotify-tabs-view');
-    const allView = document.getElementById('spotify-all-view');
-    const btnTabs = document.getElementById('btn-view-tabs');
-    const btnAll = document.getElementById('btn-view-all');
-
-    if (view === 'all') {
-        if (tabsView) tabsView.style.display = 'none';
-        if (allView) allView.style.display = 'flex';
-        if (btnTabs) btnTabs.classList.remove('active');
-        if (btnAll) btnAll.classList.add('active');
-    } else {
-        if (tabsView) tabsView.style.display = 'block';
-        if (allView) allView.style.display = 'none';
-        if (btnTabs) btnTabs.classList.add('active');
-        if (btnAll) btnAll.classList.remove('active');
-    }
-}
-
-function selectSpotifyTrack(index, e) {
-    if (e) e.stopPropagation();
-    if (!currentSpotifySongs || currentSpotifySongs.length <= index) return;
-    activeSpotifyIndex = index;
-
-    const modalSpotifyIframe = document.getElementById('modal-spotify-iframe');
-    const modalCaption = document.getElementById('modal-caption');
-    const tabButtons = document.querySelectorAll('.spotify-tab-btn');
-
-    tabButtons.forEach((btn, idx) => {
-        if (idx === index) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
-    const selectedSong = currentSpotifySongs[index];
-    if (modalSpotifyIframe) {
-        modalSpotifyIframe.src = selectedSong.url;
-    }
-    if (modalCaption) {
-        modalCaption.innerText = selectedSong.title;
-    }
-}
+// Fungsi Spotify removed
 
 function handleModalBackdropClick(e) {
     if (e.target.id === 'image-modal') {
@@ -532,10 +485,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalCaption = document.getElementById('modal-caption');
     const modalSpotifyContainer = document.getElementById('modal-spotify-container');
     const modalSpotifyIframe = document.getElementById('modal-spotify-iframe');
-    const modalSpotifyAll1 = document.getElementById('modal-spotify-all-1');
-    const modalSpotifyAll2 = document.getElementById('modal-spotify-all-2');
-    const modalSpotifyAll3 = document.getElementById('modal-spotify-all-3');
-    const spotifyTabs = document.getElementById('spotify-tabs');
 
     if (daftarFoto.length > 0 && modal && modalImg) {
         daftarFoto.forEach(foto => {
@@ -548,14 +497,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 modalIframe.src = ""; // Kosongkan lagu sebelumnya
                 if (modalSpotifyContainer) modalSpotifyContainer.style.display = 'none';
                 if (modalSpotifyIframe) modalSpotifyIframe.src = "";
-                if (modalSpotifyAll1) modalSpotifyAll1.src = "";
-                if (modalSpotifyAll2) modalSpotifyAll2.src = "";
-                if (modalSpotifyAll3) modalSpotifyAll3.src = "";
-
-                // A. JIKA YANG DIKLIK ADALAH KARTU SPOTIFY DENGAN 3 LAGU
+                // A. JIKA YANG DIKLIK ADALAH KARTU SPOTIFY
                 const dataType = this.getAttribute('data-type');
                 const isSpotifyCard = dataType === 'spotify' ||
-                    this.hasAttribute('data-embed-1') ||
                     (this.getAttribute('data-embed') && this.getAttribute('data-embed').includes('spotify.com'));
 
                 if (this.classList.contains('planet-card') && isSpotifyCard) {
@@ -563,68 +507,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalIframe.style.display = 'none';
                     if (modalSpotifyContainer) modalSpotifyContainer.style.display = 'flex';
 
-                    // Kumpulkan 3 lagu embed
-                    currentSpotifySongs = [];
-                    for (let i = 1; i <= 3; i++) {
-                        const embedUrl = this.getAttribute(`data-embed-${i}`) || (i === 1 ? this.getAttribute('data-embed') : null);
-                        const caption = this.getAttribute(`data-caption-${i}`) || (i === 1 ? this.getAttribute('data-caption') : `Lagu ${i}`);
-                        if (embedUrl) {
-                            currentSpotifySongs.push({
-                                url: embedUrl,
-                                title: caption
-                            });
-                        }
+                    const embedUrl = this.getAttribute('data-embed');
+                    if (modalSpotifyIframe) {
+                        modalSpotifyIframe.src = embedUrl;
                     }
 
-                    // Fallback jika tidak ada data-embed-1..3
-                    if (currentSpotifySongs.length === 0 && this.hasAttribute('data-embed')) {
-                        currentSpotifySongs.push({
-                            url: this.getAttribute('data-embed'),
-                            title: this.getAttribute('data-caption') || 'Favorite Song'
-                        });
-                    }
-
-                    // Render Tabs
-                    if (spotifyTabs) {
-                        spotifyTabs.innerHTML = '';
-                        currentSpotifySongs.forEach((song, idx) => {
-                            const btn = document.createElement('button');
-                            btn.type = 'button';
-                            btn.className = `spotify-tab-btn ${idx === 0 ? 'active' : ''}`;
-                            btn.innerHTML = `
-                                <span class="tab-num">${idx + 1}</span>
-                                <span class="tab-title">${song.title}</span>
-                                <span class="tab-icon">▶</span>
-                            `;
-                            btn.addEventListener('click', (e) => selectSpotifyTrack(idx, e));
-                            spotifyTabs.appendChild(btn);
-                        });
-                    }
-
-                    // Set default view ke tabs
-                    switchSpotifyView('tabs');
-
-                    // Set URL Lagu 1 ke player utama
-                    activeSpotifyIndex = 0;
-                    if (modalSpotifyIframe && currentSpotifySongs[0]) {
-                        modalSpotifyIframe.src = currentSpotifySongs[0].url;
-                    }
-
-                    // Set URL dan Label ke ke-3 iframe view langsung
-                    if (modalSpotifyAll1 && currentSpotifySongs[0]) modalSpotifyAll1.src = currentSpotifySongs[0].url;
-                    if (modalSpotifyAll2 && currentSpotifySongs[1]) modalSpotifyAll2.src = currentSpotifySongs[1].url;
-                    if (modalSpotifyAll3 && currentSpotifySongs[2]) modalSpotifyAll3.src = currentSpotifySongs[2].url;
-
-                    const songTag1 = document.getElementById('spotify-all-tag-1');
-                    const songTag2 = document.getElementById('spotify-all-tag-2');
-                    const songTag3 = document.getElementById('spotify-all-tag-3');
-                    if (songTag1 && currentSpotifySongs[0]) songTag1.textContent = `🎵 1. ${currentSpotifySongs[0].title}`;
-                    if (songTag2 && currentSpotifySongs[1]) songTag2.textContent = `🎵 2. ${currentSpotifySongs[1].title}`;
-                    if (songTag3 && currentSpotifySongs[2]) songTag3.textContent = `🎵 3. ${currentSpotifySongs[2].title}`;
-
-                    if (modalCaption && currentSpotifySongs[0]) {
-                        modalCaption.innerText = currentSpotifySongs[0].title;
-                    }
+                    const customCaption = this.getAttribute('data-caption');
+                    const capEl = this.querySelector('.planet-caption');
+                    const teksCaption = customCaption ? customCaption : (capEl ? capEl.innerText : '');
+                    if (modalCaption) modalCaption.innerText = teksCaption;
                 }
                 // B. JIKA YANG DIKLIK ADALAH KARTU LAGU/VIDEO LAINNYA (Misal YouTube)
                 else if (this.classList.contains('planet-card') && this.hasAttribute('data-embed')) {
@@ -684,21 +575,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 else {
                     modalImg.src = this.src;
                     const cardParent = this.closest('.scratch-card');
-                    const is32 = (cardParent && cardParent.classList.contains('aspect-3-2')) || 
+                    const isLandscape = (cardParent && cardParent.classList.contains('aspect-4-3')) ||
                                  (this.naturalWidth && this.naturalHeight && (this.naturalWidth / this.naturalHeight > 1.2));
 
-                    if (is32) {
-                        modalImg.style.aspectRatio = "3 / 2";
+                    if (isLandscape) {
+                        // Foto 4:3 (landscape)
+                        modalImg.style.aspectRatio = "4 / 3";
                         modalImg.style.width = "auto";
                         modalImg.style.height = "auto";
-                        modalImg.style.maxWidth = "90vw";
+                        modalImg.style.maxWidth = "92vw";
                         modalImg.style.maxHeight = "75vh";
                         modalImg.style.objectFit = "contain";
                     } else {
-                        modalImg.style.aspectRatio = "9 / 16";
+                        // Foto 3:4 (portrait)
+                        modalImg.style.aspectRatio = "3 / 4";
                         modalImg.style.width = "auto";
                         modalImg.style.height = "75vh";
-                        modalImg.style.maxWidth = "85vw";
+                        modalImg.style.maxWidth = "90vw";
                         modalImg.style.maxHeight = "75vh";
                         modalImg.style.objectFit = "cover";
                     }
@@ -723,9 +616,6 @@ function tutupModal() {
     const modal = document.getElementById('image-modal');
     const modalIframe = document.getElementById('modal-iframe');
     const modalSpotifyIframe = document.getElementById('modal-spotify-iframe');
-    const modalSpotifyAll1 = document.getElementById('modal-spotify-all-1');
-    const modalSpotifyAll2 = document.getElementById('modal-spotify-all-2');
-    const modalSpotifyAll3 = document.getElementById('modal-spotify-all-3');
     const modalSpotifyContainer = document.getElementById('modal-spotify-container');
     const modalImg = document.getElementById('modal-img');
 
@@ -734,9 +624,6 @@ function tutupModal() {
         // KUNCI PENTING: Mengosongkan src agar lagu/video berhenti berputar saat ditutup
         if (modalIframe) modalIframe.src = "";
         if (modalSpotifyIframe) modalSpotifyIframe.src = "";
-        if (modalSpotifyAll1) modalSpotifyAll1.src = "";
-        if (modalSpotifyAll2) modalSpotifyAll2.src = "";
-        if (modalSpotifyAll3) modalSpotifyAll3.src = "";
         if (modalSpotifyContainer) modalSpotifyContainer.style.display = 'none';
 
         if (modalImg) {
@@ -1146,8 +1033,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = canvas.closest('.scratch-card');
             const cardRect = card ? card.getBoundingClientRect() : canvas.getBoundingClientRect();
             const w = Math.round(cardRect.width || card?.offsetWidth || 220);
-            const isCard32 = card && card.classList.contains('aspect-3-2');
-            const h = Math.round(cardRect.height || card?.offsetHeight || (isCard32 ? Math.round(w * 2 / 3) : Math.round(w * 16 / 9)));
+            const isCard43 = card && card.classList.contains('aspect-4-3');
+            const h = Math.round(cardRect.height || card?.offsetHeight || (isCard43 ? Math.round(w * 3 / 4) : Math.round(w * 4 / 3)));
             canvas.width = w;
             canvas.height = h;
 
