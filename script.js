@@ -256,7 +256,7 @@
                 // Percobaan pertama: tampilkan foto kucing
                 showCat: true,
                 emoji: '',
-                message: 'Masa tanggal lahir aku lupa?',
+                message: 'Masa tanggal special kita lupa?',
                 buttonText: 'Iya iya maaf 😭'
             },
             {
@@ -576,7 +576,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     modalImg.src = this.src;
                     const cardParent = this.closest('.scratch-card');
                     const isLandscape = (cardParent && cardParent.classList.contains('aspect-4-3')) ||
-                                 (this.naturalWidth && this.naturalHeight && (this.naturalWidth / this.naturalHeight > 1.2));
+                        (this.naturalWidth && this.naturalHeight && (this.naturalWidth / this.naturalHeight > 1.2));
 
                     if (isLandscape) {
                         // Foto 4:3 (landscape)
